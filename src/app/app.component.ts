@@ -4,6 +4,7 @@ import {
   ViewChild,
   ViewContainerRef
 } from "@angular/core";
+import { css } from "emotion";
 
 @Component({
   selector: "app-root",
@@ -33,29 +34,55 @@ export class AppComponent {
   }
 }
 
+@withStyles({
+  border: "2px solid red",
+  color: "orange",
+  padding: "15px 32px",
+  textAlign: "center",
+  textDecoration: "none",
+  display: "inline-block",
+  fontSize: "16px",
+  margin: "4px 2px",
+  cursor: "pointer"
+})
 @withTheme()
 @Component({
   selector: "app-test1",
   template: `
-    <b [style.color]="theme?.palette?.red"
-      >My display color is {{ theme?.palette?.red }}</b
-    >
+    <div class="{{ this.className }}">
+      <b [style.color]="theme?.palette?.red"
+        >My display color is {{ theme?.palette?.red }}</b
+      >
+    </div>
   `,
   styles: []
 })
 export class AppTest1Component {}
 
+@withStyles({
+  border: "2px solid red",
+  color: "black",
+  padding: "15px 32px",
+  textAlign: "center",
+  backgroundColor: "yellow"
+})
 @withTheme()
 @Component({
   selector: "app-test2",
   template: `
-    <b [style.color]="theme?.palette?.purple"
-      >My display color is {{ theme?.palette?.purple }}</b
-    >
+    <div class="{{ this.className }}">
+      <b [style.color]="theme?.palette?.purple"
+        >My display color is {{ theme?.palette?.purple }}</b
+      >
+    </div>
   `,
   styles: []
 })
-export class AppTest2Component {}
+export class AppTest2Component {
+  constructor() {
+    console.log(this);
+  }
+}
 
 export function withTheme() {
   return cmpType => {
@@ -80,6 +107,20 @@ export function withTheme() {
           xxl: 84
         }
       };
+      return cmp;
+    };
+    return cmpType;
+  };
+}
+
+export function withStyles(customStyles) {
+  return cmpType => {
+    const originalFactory = cmpType.ɵfac;
+    cmpType.ɵcmp.factory = (...args: any) => {
+      const cmp: any = originalFactory(...args);
+      const styles = css([{ ...customStyles }]);
+      cmp.className = styles;
+
       return cmp;
     };
     return cmpType;
